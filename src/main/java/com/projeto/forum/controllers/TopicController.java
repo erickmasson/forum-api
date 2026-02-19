@@ -1,14 +1,17 @@
 package com.projeto.forum.controllers;
 
 import com.projeto.forum.dto.TopicDTO;
+import com.projeto.forum.dto.TopicDetailsDTO;
+import com.projeto.forum.dto.TopicInsertDTO;
 import com.projeto.forum.services.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/topics")
@@ -20,5 +23,20 @@ public class TopicController {
     public ResponseEntity<Page<TopicDTO>> findAll(Pageable pageable){
         Page<TopicDTO> page = service.findAllPaged(pageable);
         return ResponseEntity.ok(page);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TopicDetailsDTO> findById(@PathVariable Long id){
+        TopicDetailsDTO dto = service.findById(id);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping
+    public ResponseEntity<TopicDTO> insert(@RequestBody TopicInsertDTO dto){
+        TopicDTO newDto = service.insert(dto);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(newDto.id()).toUri();
+
+        return ResponseEntity.created(uri).body(newDto);
     }
 }
