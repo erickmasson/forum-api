@@ -72,5 +72,13 @@ public class TopicService {
             throw new ResourceNotFoundException("ID " + id + " não encontrado para atualização");
         }
     }
+
+    @Transactional
+    public void delete(Long id){
+        if(!repository.existsById(id)){
+            throw new ResourceNotFoundException("ID " + id + " não encontrado para exclusão");
+        }
+        repository.deleteById(id);
+    }
 }
 
