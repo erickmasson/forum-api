@@ -3,6 +3,7 @@ package com.projeto.forum.controllers;
 import com.projeto.forum.dto.TopicDTO;
 import com.projeto.forum.dto.TopicDetailsDTO;
 import com.projeto.forum.dto.TopicInsertDTO;
+import com.projeto.forum.dto.TopicUpdateDTO;
 import com.projeto.forum.services.TopicService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +40,11 @@ public class TopicController {
                 .buildAndExpand(newDto.id()).toUri();
 
         return ResponseEntity.created(uri).body(newDto);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TopicDTO> update(@PathVariable Long id, @Valid @RequestBody TopicUpdateDTO dto){
+        TopicDTO updatedDto = service.update(id, dto);
+        return ResponseEntity.ok(updatedDto);
     }
 }

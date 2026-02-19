@@ -3,11 +3,14 @@ package com.projeto.forum.services;
 import com.projeto.forum.dto.TopicDTO;
 import com.projeto.forum.dto.TopicDetailsDTO;
 import com.projeto.forum.dto.TopicInsertDTO;
+import com.projeto.forum.dto.TopicUpdateDTO;
 import com.projeto.forum.entities.Topic;
 import com.projeto.forum.entities.User;
 import com.projeto.forum.entities.enums.TopicStatus;
 import com.projeto.forum.repositories.TopicRepository;
 import com.projeto.forum.repositories.UserRepository;
+import com.projeto.forum.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,6 +56,21 @@ public class TopicService {
         entity = repository.save(entity);
 
         return new TopicDTO(entity);
+    }
+
+    @Transactional
+    public TopicDTO update(Long id, TopicUpdateDTO dto){
+        try{
+            Topic entity = repository.getReferenceById(id);
+            entity.setTitle(dto.title());
+            entity.setMessage(dto.message());
+
+            entity = repository.save(entity);
+
+            return new TopicDTO(entity);
+        }catch (EntityNotFoundException e){
+            throw new ResourceNotFoundException("ID " + id + " não encontrado para atualização");
+        }
     }
 }
 
