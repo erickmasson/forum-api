@@ -4,6 +4,7 @@ import com.projeto.forum.dto.TopicDTO;
 import com.projeto.forum.dto.TopicDetailsDTO;
 import com.projeto.forum.dto.TopicInsertDTO;
 import com.projeto.forum.services.TopicService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +33,7 @@ public class TopicController {
     }
 
     @PostMapping
-    public ResponseEntity<TopicDTO> insert(@RequestBody TopicInsertDTO dto){
+    public ResponseEntity<TopicDTO> insert(@Valid @RequestBody TopicInsertDTO dto){
         TopicDTO newDto = service.insert(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(newDto.id()).toUri();
