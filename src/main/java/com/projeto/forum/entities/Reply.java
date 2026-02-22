@@ -69,6 +69,14 @@ public class Reply implements Serializable {
         return author;
     }
 
+    public void setTopic(Topic topic) {
+        this.topic = topic;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

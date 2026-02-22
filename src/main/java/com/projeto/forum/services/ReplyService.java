@@ -1,0 +1,47 @@
+package com.projeto.forum.services;
+
+import com.projeto.forum.dto.ReplyDTO;
+import com.projeto.forum.dto.ReplyInsertDTO;
+import com.projeto.forum.entities.Reply;
+import com.projeto.forum.entities.Topic;
+import com.projeto.forum.entities.User;
+import com.projeto.forum.repositories.ReplyRepository;
+import com.projeto.forum.repositories.TopicRepository;
+import com.projeto.forum.repositories.UserRepository;
+import com.projeto.forum.services.exceptions.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+
+@Service
+public class ReplyService {
+    @Autowired
+    private ReplyRepository replyRepository;
+
+    @Autowired
+    private TopicRepository topicRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Transactional
+    public ReplyDTO insert(ReplyInsertDTO dto){
+        Reply entity = new Reply();
+        entity.setMessage(dto.message());
+        entity.setCreatedAt(Instant.now());
+
+        Topic topic = topicRepository.findById(dto.topicId())
+                .orElseThrow(() -> new ResourceNotFoundException("Tópico não encontrado com ID: " + dto.topicId()));
+
+        User author = userRepository.findById(dto.authorId())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + dto.authorId()));
+
+        entity.setTopic(topic);
+        entity.setAuthor(author);
+
+        entity = replyRepository.save(entity);
+        return new ReplyDTO(entity);
+    }
+}
