@@ -2,6 +2,7 @@ package com.projeto.forum.services;
 
 import com.projeto.forum.dto.ReplyDTO;
 import com.projeto.forum.dto.ReplyInsertDTO;
+import com.projeto.forum.dto.ReplyUpdateDTO;
 import com.projeto.forum.entities.Reply;
 import com.projeto.forum.entities.Topic;
 import com.projeto.forum.entities.User;
@@ -9,6 +10,7 @@ import com.projeto.forum.repositories.ReplyRepository;
 import com.projeto.forum.repositories.TopicRepository;
 import com.projeto.forum.repositories.UserRepository;
 import com.projeto.forum.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,5 +45,25 @@ public class ReplyService {
 
         entity = replyRepository.save(entity);
         return new ReplyDTO(entity);
+    }
+
+    @Transactional
+    public ReplyDTO update(Long id, ReplyUpdateDTO dto){
+        try {
+            Reply entity = replyRepository.getReferenceById(id);
+            entity.setMessage(dto.message());
+            entity = replyRepository.save(entity);
+            return new ReplyDTO(entity);
+        }catch (EntityNotFoundException e){
+            throw new ResourceNotFoundException("Resposta não encontrada com ID: " + id);
+        }
+    }
+
+    @Transactional
+    public void delete(Long id){
+        if(!replyRepository.existsById(id)){
+            throw new ResourceNotFoundException("Resposta não encontrada com ID: " + id);
+        }
+        replyRepository.deleteById(id);
     }
 }

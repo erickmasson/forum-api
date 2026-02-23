@@ -37,7 +37,7 @@ public class TopicService {
 
     @Transactional(readOnly = true)
     public TopicDetailsDTO findById(Long id){
-        Topic entity = repository.findById(id).orElseThrow(() -> new RuntimeException("Tópico não encontrado"));
+        Topic entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tópico não encontrado com ID: " + id));
         return new TopicDetailsDTO(entity);
     }
 
@@ -79,6 +79,14 @@ public class TopicService {
             throw new ResourceNotFoundException("ID " + id + " não encontrado para exclusão");
         }
         repository.deleteById(id);
+    }
+
+    @Transactional
+    public void markAsSolved(Long id){
+        Topic entity = repository.getReferenceById(id);
+
+        entity.setStatus(TopicStatus.SOLVED);
+        repository.save(entity);
     }
 }
 

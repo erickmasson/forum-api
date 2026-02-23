@@ -53,4 +53,10 @@ public class TopicController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/solved")
+    public ResponseEntity<Void> markAsSolved(@PathVariable Long id){
+        service.markAsSolved(id);
+        return ResponseEntity.noContent().build();
+    }
 }

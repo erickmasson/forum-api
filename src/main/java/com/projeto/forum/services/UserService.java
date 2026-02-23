@@ -1,0 +1,62 @@
+package com.projeto.forum.services;
+
+import com.projeto.forum.dto.UserDTO;
+import com.projeto.forum.dto.UserInsertDTO;
+import com.projeto.forum.dto.UserUpdateDTO;
+import com.projeto.forum.entities.User;
+import com.projeto.forum.repositories.UserRepository;
+import com.projeto.forum.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+public class UserService {
+    @Autowired
+    private UserRepository repository;
+
+    @Transactional(readOnly = true)
+    public List<UserDTO> findAll(){
+        return repository.findAll().stream().map(UserDTO::new).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public UserDTO findById(Long id){
+        User entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + id));
+        return new UserDTO(entity);
+    }
+
+    @Transactional
+    public UserDTO insert(UserInsertDTO dto){
+        User entity = new User();
+        entity.setName(dto.name());
+        entity.setEmail(dto.email());
+        entity.setPassword(dto.password());
+        entity = repository.save(entity);
+        return new UserDTO(entity);
+    }
+
+    @Transactional
+    public UserDTO update(Long id, UserUpdateDTO dto){
+        try {
+            User entity = repository.getReferenceById(id);
+            entity.setName(dto.name());
+            entity.setEmail(dto.email());
+            entity = repository.save(entity);
+            return new UserDTO(entity);
+        }catch (EntityNotFoundException e){
+            throw new ResourceNotFoundException("Usuário não encontrado com ID: " + id);
+        }
+    }
+
+    @Transactional
+    public void delete(Long id){
+        if(!repository.existsById(id)){
+            throw new ResourceNotFoundException("Usuário não encontrado com ID: " + id);
+        }
+        repository.deleteById(id);
+    }
+}
