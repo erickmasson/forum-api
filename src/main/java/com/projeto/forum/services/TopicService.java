@@ -29,8 +29,19 @@ public class TopicService {
     private UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public Page<TopicDTO> findAllPaged(Pageable pageable) {
-        Page<Topic> page = repository.findAll(pageable);
+    public Page<TopicDTO> findAllPaged(String title, String authorName, TopicStatus status, Pageable pageable) {
+        Page<Topic> page;
+
+        if (title != null && !title.isBlank()) {
+            page = repository.findByTitleContainingIgnoreCase(title, pageable);
+        } else if (authorName != null && !authorName.isBlank()) {
+            page = repository.findByAuthorNameContainingIgnoreCase(authorName, pageable);
+        }else if(status != null){
+            page = repository.findByStatus(status, pageable);
+        }
+        else {
+            page = repository.findAll(pageable);
+        }
 
         return page.map(TopicDTO::new);
     }

@@ -4,6 +4,7 @@ import com.projeto.forum.dto.TopicDTO;
 import com.projeto.forum.dto.TopicDetailsDTO;
 import com.projeto.forum.dto.TopicInsertDTO;
 import com.projeto.forum.dto.TopicUpdateDTO;
+import com.projeto.forum.entities.enums.TopicStatus;
 import com.projeto.forum.services.TopicService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,13 @@ public class TopicController {
     private TopicService service;
 
     @GetMapping
-    public ResponseEntity<Page<TopicDTO>> findAll(Pageable pageable){
-        Page<TopicDTO> page = service.findAllPaged(pageable);
+    public ResponseEntity<Page<TopicDTO>> findAll(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String authorName,
+            @RequestParam(required = false) TopicStatus status,
+            Pageable pageable) {
+
+        Page<TopicDTO> page = service.findAllPaged(title, authorName, status, pageable);
         return ResponseEntity.ok(page);
     }
 
