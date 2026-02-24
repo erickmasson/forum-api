@@ -1,5 +1,6 @@
 package com.projeto.forum.controllers.exceptions;
 
+import com.projeto.forum.services.exceptions.DatabaseException;
 import com.projeto.forum.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -45,5 +46,17 @@ public class ResourceExceptionHandler {
         err.put("path", request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
+    }
+
+    @ExceptionHandler(DatabaseException.class)
+    public ResponseEntity<Map<String, Object>> database(DatabaseException e, HttpServletRequest request){
+        Map<String, Object> err = new HashMap<>();
+        err.put("timestamp", Instant.now());
+        err.put("status", HttpStatus.BAD_REQUEST.value());
+        err.put("error", "Erro de integridade de dados");
+        err.put("message", e.getMessage());
+        err.put("path", request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
 }

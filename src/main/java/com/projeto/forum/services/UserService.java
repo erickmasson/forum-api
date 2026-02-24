@@ -5,9 +5,11 @@ import com.projeto.forum.dto.UserInsertDTO;
 import com.projeto.forum.dto.UserUpdateDTO;
 import com.projeto.forum.entities.User;
 import com.projeto.forum.repositories.UserRepository;
+import com.projeto.forum.services.exceptions.DatabaseException;
 import com.projeto.forum.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +59,14 @@ public class UserService {
         if(!repository.existsById(id)){
             throw new ResourceNotFoundException("Usuário não encontrado com ID: " + id);
         }
+
+        try{
+            repository.deleteById(id);
+            repository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException("Não é possível deletar um usuário que possui tópicos ou respostas vinculadas.");
+        }
+
         repository.deleteById(id);
     }
 }
