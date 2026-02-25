@@ -12,6 +12,7 @@ import com.projeto.forum.repositories.UserRepository;
 import com.projeto.forum.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,15 +31,15 @@ public class ReplyService {
 
     @Transactional
     public ReplyDTO insert(ReplyInsertDTO dto){
+
+        User author = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         Reply entity = new Reply();
         entity.setMessage(dto.message());
         entity.setCreatedAt(Instant.now());
 
         Topic topic = topicRepository.findById(dto.topicId())
                 .orElseThrow(() -> new ResourceNotFoundException("Tópico não encontrado com ID: " + dto.topicId()));
-
-        User author = userRepository.findById(dto.authorId())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + dto.authorId()));
 
         entity.setTopic(topic);
         entity.setAuthor(author);

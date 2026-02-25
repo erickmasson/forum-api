@@ -8,9 +8,6 @@ public record ReplyInsertDTO(
         String message,
 
         @NotNull(message = "O ID do tópico é obrigatório")
-        Long topicId,
-
-        @NotNull(message = "O ID do autor é obrigatório")
-        Long authorId
+        Long topicId
 ) {
 }

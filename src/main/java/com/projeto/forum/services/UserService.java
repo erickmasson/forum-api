@@ -10,6 +10,7 @@ import com.projeto.forum.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,9 @@ import java.util.List;
 public class UserService {
     @Autowired
     private UserRepository repository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public List<UserDTO> findAll(){
@@ -36,7 +40,7 @@ public class UserService {
         User entity = new User();
         entity.setName(dto.name());
         entity.setEmail(dto.email());
-        entity.setPassword(dto.password());
+        entity.setPassword(passwordEncoder.encode(dto.password()));
         entity = repository.save(entity);
         return new UserDTO(entity);
     }

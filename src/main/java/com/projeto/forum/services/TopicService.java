@@ -14,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,18 +55,16 @@ public class TopicService {
 
     @Transactional(readOnly = true)
     public TopicDTO insert(TopicInsertDTO dto){
+        User author = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         Topic entity = new Topic();
         entity.setTitle(dto.title());
         entity.setMessage(dto.message());
         entity.setCreatedAt(Instant.now());
         entity.setStatus(TopicStatus.OPEN);
-
-        User author = userRepository.findById(dto.authorId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
         entity.setAuthor(author);
-        entity = repository.save(entity);
 
+        entity = repository.save(entity);
         return new TopicDTO(entity);
     }
 

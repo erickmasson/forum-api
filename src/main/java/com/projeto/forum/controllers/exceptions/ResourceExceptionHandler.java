@@ -59,4 +59,16 @@ public class ResourceExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
+
+    @ExceptionHandler(org.springframework.dao.InvalidDataAccessApiUsageException.class)
+    public ResponseEntity<Map<String, Object>> invalidDataUsage(RuntimeException e, HttpServletRequest request) {
+        Map<String, Object> err = new HashMap<>();
+        err.put("timestamp", Instant.now());
+        err.put("status", HttpStatus.BAD_REQUEST.value());
+        err.put("error", "Parâmetro de ordenação ou paginação inválido");
+        err.put("message", "Verifique se os campos de ordenação existem na entidade.");
+        err.put("path", request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+    }
 }
