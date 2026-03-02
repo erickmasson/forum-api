@@ -7,9 +7,12 @@ import com.projeto.forum.dto.TopicUpdateDTO;
 import com.projeto.forum.entities.enums.TopicStatus;
 import com.projeto.forum.services.TopicService;
 import jakarta.validation.Valid;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -27,7 +30,7 @@ public class TopicController {
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String authorName,
             @RequestParam(required = false) TopicStatus status,
-            Pageable pageable) {
+            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
         Page<TopicDTO> page = service.findAllPaged(title, authorName, status, pageable);
         return ResponseEntity.ok(page);
